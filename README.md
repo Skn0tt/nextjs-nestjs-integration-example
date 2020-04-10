@@ -3,17 +3,18 @@
 ## Foreword
 
 While working on [hilfehub.org](https://hilfehub.org), I got to know [Next.js](https://nextjs.org/) and found it to be really great.
-Especially the integration of API routes is a very nice feature to have - and having worked using a multi-service architecture in the past, I found it a joy to have a single monolith.
+Especially the integration of API routes is a very nice feature to have - and having worked using multi-service architectures in the past, I found it a joy to be working on a single monolith.
 So I decided to make an effort to migrate [EntE](https://ente.app) (my biggest project to date) to use Next.js.
-Having a monolith will hopefully decrease deployment and development complexity by far - at the moment, theres just a lot going on in the EntE repo.
+Having a monolith will hopefully decrease deployment and development complexity - at the moment, theres just a lot going on in the EntE repository.
 
 ## The Problem
 
 I've got a fully-working NestJS-based backend, which I don't want to throw away just to migrate to Next.js.
 So the goal is to hook up Next.js' API mechanism to my existing backend.
 
-While there's the option to define a [Custom Server](https://nextjs.org/docs/advanced-features/custom-server) for Next.js, that's discouraged so I wanted to find a way around it.
-In this example, we'll make use of [Dynamic API Routes](https://nextjs.org/docs/api-routes/dynamic-api-routes) to define a Catch-All-Route which will then relay to our NestJS instance.
+Since defining a [Custom Server](https://nextjs.org/docs/advanced-features/custom-server) is discouraged in Next.js' docs, I wanted to find a way around doing that.
+In this example, we'll make use of [Dynamic API Routes](https://nextjs.org/docs/api-routes/dynamic-api-routes).
+We'll define a Catch-All-Route and forward incoming requests to our NestJS instance.
 
 That's done by creating a file called `/api/[...catchAll].ts`, which - surprise - will catch all requests to `/api`.
 In Next.JS, API routes look like this:
@@ -25,10 +26,10 @@ export default async (request, response) => {
 }
 ```
 
-That's basically the interface of Node's `http.Server` Handlers, and since NestJS uses Express internally, which uses http.Server internally, there needs to be away to integrate that with NestJS, surely?
+That's basically the interface of Node's `http.Server` Handlers, and since NestJS uses Express internally, which uses http.Server internally, there surely is a away to integrate that with NestJS, right?
 Turns out: there is!
 
-On a high level, what we're going to do is getting that request handler from NestJS and pass our `request` and `response` into it.
+On a high level, this is what we're going to do: We'll get the request handler from our NestJS application and pass our `request` and `response` into it.
 
 ```ts
 async function getNestJSRequestHandler() {
@@ -43,7 +44,7 @@ export default async (request, response) => {
 }
 ```
 
-So let's go over how that's done.
+So let's have a look at how that's done.
 
 ### 1. Init the NestJS application
 
@@ -61,7 +62,7 @@ await app.init();
 ### 2. Get the `http.Server`
 
 Now we need to get the app's integrated `http.Server`.
-NestJS is kind to us - there's a function to get it!
+NestJS is kind to us - there's a function for it!
 
 ```ts
 const server: http.Server = app.getHttpServer();
@@ -69,24 +70,26 @@ const server: http.Server = app.getHttpServer();
 
 ### 3. Get the registered request handler
 
-This is the hardest part - but with some StackOverflow, I found out how to do it.
-There's the `listeners` function, which will return you an array of registered handlers.
+This is the hardest part - but with the help of StackOverflow, I found out how to do it.
+On `http.Server`, there's the `listeners` function.
+It will return you an array of registered handlers.
 In our case, there's exactly one, and that's the one we're looking for!
 
 ```ts
 const [ requestHandler ] = server.listeners("request") as NextApiHandler[];
 ```
 
-So once we got the request handler, we can go back to our Next.js API route and finish integration.
+So now we've got our request handler.
+Let's get back to our Next.js API route and finish integration.
 
 ## Finishing touches on our catch-all route
 
-While this is working, you'll see an error:
+Although the method above is functioning, you'll see a warning:
 
-> API resolved without sending a response for /api/randomNumber, this may result in stalled requests.
+> API resolved without sending a response for /api/, this may result in stalled requests.
 
 That's because our catch-all handler finishes execution before the request is fully answered.
-While that warning is a false positive, we want it to be fixed nevertheless. 
+In reality, all requests are answered, so that warning is a false positive, but let's fix it nevertheless. 
 
 ```ts
 export default (request, response) => new Promise(
@@ -98,10 +101,11 @@ export default (request, response) => new Promise(
 );
 ```
 
-By not using `async` / `await` Syntax but a plain old Promise instead, we can customize when the Handler resolves - we'll resolve it once `response` emits the [`finish` event](https://nodejs.org/api/http.html#http_event_finish), which happens after the last chunk of the body is sent.
+By not using `async` / `await` Syntax but a plain old Promise instead, we can customize when the handler resolves.
+Our request is finished once `response` emits the [`finish` event](https://nodejs.org/api/http.html#http_event_finish),
+so that's when we'll resolve our handler.
 
 ## Conclusion
 
-Integrating Next.js and NestJS is easier than thought - and by using this strategy, you can basically connect every `http.Server`-based framework to Next.js.
-If you want to see a working example, have a look at the code in this repo.
-It's deployed [here](https://nextjs-nestjs-integration-example.simonknott.de), if you want to see it in action :)
+Integrating Next.js and NestJS is easier than it seems - and by using this strategy, you can basically connect every `http.Server`-based framework to Next.js.
+If you want to see a working example, have a look at the code in this repo, which you can see in action [here](https://nextjs-nestjs-integration-example.simonknott.de).
