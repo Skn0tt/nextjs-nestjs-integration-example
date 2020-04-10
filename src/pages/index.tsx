@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 function useRandomNumber() {
-  const [ number, setNumber ] = useState();
+  const [ number, setNumber ] = useState<number>();
 
   useEffect(
     () => {
