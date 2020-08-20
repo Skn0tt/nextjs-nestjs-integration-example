@@ -11,7 +11,8 @@ export module Backend {
   export async function getListener() {
     if (!listener) {
       const app = await NestFactory.create(
-        AppModule
+        AppModule,
+        { bodyParser: false }
       );
       app.setGlobalPrefix("api");
   
