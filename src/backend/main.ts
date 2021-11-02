@@ -6,21 +6,27 @@ import { NextApiHandler } from "next";
 import { INestApplication } from "@nestjs/common";
 
 export module Backend {
-
-  let app: INestApplication;
-
-  export async function getApp() {
-    if (!app) {
-      app = await NestFactory.create(
-        AppModule,
-        { bodyParser: false }
-      );
-      app.setGlobalPrefix("api");
+  export async function getApp(): Promise<INestApplication> {
+    if (globalThis.app) {
+      return globalThis.app;
+    }
   
-      await app.init();
+    if (!globalThis.appPromise) {
+      globalThis.appPromise = new Promise<void>(async (resolve) => {
+        const appInCreation = await NestFactory.create(AppModule, {
+          bodyParser: false
+        });
+        await appInCreation.init();
+        globalThis.app = appInCreation;
+        globalThis.app.setGlobalPrefix("api/graphql",  {
+          exclude: ["/api/randomNumber"]
+        });
+        resolve();
+      });
     }
 
-    return app;
+    await globalThis.appPromise;
+    return globalThis.app;
   }
 
   export async function getListener() {
