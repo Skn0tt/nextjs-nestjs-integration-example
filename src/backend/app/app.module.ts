@@ -12,7 +12,8 @@ import { AppController } from "./app.controller";
       autoSchemaFile: true,
       bodyParserConfig: false,
       cors: false,
-      introspection: true
+      introspection: true,
+      playground: true, // must be `false` when using in production
     }),
   ],
   providers: [AppResolver],
