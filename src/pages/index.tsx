@@ -1,27 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react'
 
-function useRandomNumber() {
-  const [ number, setNumber ] = useState<number>();
-
-  useEffect(
-    () => {
-      fetch("/api/randomNumber")
-        .then(response => response.text())
-        .then(text => setNumber(+text));
-    },
-    []
-  );
-
-  return number;
+export default function home() {
+	const [number, setNumber] = useState<number>()
+	useEffect(() => {
+		fetch('/api/randomNumber')
+			.then(response => response.text())
+			.then(text => setNumber(+text))
+	}, [])
+	return <div>Random Number: {number}</div>
 }
-
-const Home = () => {
-  const number = useRandomNumber();
-  return (
-    <p>
-      Random Number: {number}
-    </p>
-  )
-};
-
-export default Home
