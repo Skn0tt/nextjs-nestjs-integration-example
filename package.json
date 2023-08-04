@@ -1,30 +1,30 @@
 {
-  "name": "nextjs-nestjs-migration-example",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "@nestjs/common": "^7.0.7",
-    "@nestjs/core": "^7.0.7",
-    "@nestjs/platform-express": "^7.0.7",
-    "next": "^10.0.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "rxjs": "^6.5.5"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.13.13",
-    "@babel/plugin-proposal-decorators": "^7.8.3",
-    "@types/node": "^13.11.1",
-    "@types/react": "^16.9.34",
-    "babel-plugin-parameter-decorator": "^1.0.16",
-    "babel-plugin-transform-typescript-metadata": "^0.3.2",
-    "reflect-metadata": "^0.1.13",
-    "ts-node": "^8.8.2",
-    "typescript": "^4.2.4"
-  }
+	"name": "nextjs-nestjs-migration-example",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"@nestjs/common": "^10.0.0",
+		"@nestjs/core": "^10.0.0",
+		"@nestjs/platform-express": "^10.0.0",
+		"next": "^13.4.12",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"rxjs": "^7.8.1"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.22.9",
+		"@babel/plugin-proposal-decorators": "^7.22.7",
+		"@types/node": "^20.4.7",
+		"@types/react": "^18.2.18",
+		"babel-plugin-parameter-decorator": "^1.0.16",
+		"babel-plugin-transform-typescript-metadata": "^0.3.2",
+		"reflect-metadata": "^0.1.13",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.1.6"
+	}
 }
